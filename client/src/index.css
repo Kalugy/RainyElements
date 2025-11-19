@@ -183,3 +183,17 @@
 .glass-panel {
   @apply bg-white/5 backdrop-blur-md border border-white/10 shadow-xl;
 }
+
+/* Thunder Flash Animation */
+@keyframes thunder-flash {
+  0% { opacity: 0; }
+  2% { opacity: 0.8; }
+  4% { opacity: 0; }
+  6% { opacity: 0.4; }
+  8% { opacity: 0; }
+  100% { opacity: 0; }
+}
+
+.thunder-active {
+  animation: thunder-flash 1s linear;
+}

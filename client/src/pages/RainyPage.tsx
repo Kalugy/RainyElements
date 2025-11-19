@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { RainEffect } from '@/components/RainEffect';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CloudRain, Sun, Moon, Music, Volume2, VolumeX, Wind } from 'lucide-react';
+import { CloudRain, Sun, Moon, Music, Volume2, VolumeX, Wind, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
 import { Switch } from '@/components/ui/switch';
@@ -25,6 +25,7 @@ export default function RainyPage() {
   const [isMuted, setIsMuted] = useState(false);
   const [windowOpen, setWindowOpen] = useState(false);
   const [volume, setVolume] = useState(0.5);
+  const [isThundering, setIsThundering] = useState(false);
   
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
@@ -35,15 +36,11 @@ export default function RainyPage() {
     const audio = audioRef.current;
     audio.loop = true;
     
-    // Update source if it's different
-    // Note: We are checking currentSrc to avoid reloading if it's the same
-    // but src property might be absolute URL, so we just set it if needed.
-    // For simplicity in this prototype, we just set it.
     const newSrc = AUDIO_SOURCES[weatherIntensity];
     if (audio.src !== newSrc) {
        const wasPlaying = !audio.paused;
        audio.src = newSrc;
-       audio.volume = volume; // Reset volume just in case
+       audio.volume = volume;
        if (wasPlaying && !isMuted) {
          audio.play().catch(e => console.log("Audio play failed:", e));
        }
@@ -58,12 +55,10 @@ export default function RainyPage() {
     if (isMuted) {
       audio.pause();
     } else {
-      // Only try to play if we have a source and user likely interacted
       audio.volume = volume;
       const playPromise = audio.play();
       if (playPromise !== undefined) {
         playPromise.catch(error => {
-          // Auto-play was prevented
           console.log("Playback prevented. User interaction needed.");
         });
       }
@@ -78,6 +73,32 @@ export default function RainyPage() {
           setVolume(0.3); // Muffled sound when window is closed
       }
   }, [windowOpen]);
+
+  // Thunder Effect Logic
+  useEffect(() => {
+    if (weatherIntensity !== 'heavy') {
+      setIsThundering(false);
+      return;
+    }
+
+    const triggerThunder = () => {
+      setIsThundering(true);
+      setTimeout(() => setIsThundering(false), 1000); // Flash lasts ~1s max in CSS
+    };
+
+    const randomInterval = () => {
+       // Random time between 5 and 15 seconds for thunder
+       const delay = 5000 + Math.random() * 10000;
+       return setTimeout(() => {
+         triggerThunder();
+         timerRef.current = randomInterval();
+       }, delay);
+    };
+
+    let timerRef = { current: randomInterval() };
+
+    return () => clearTimeout(timerRef.current);
+  }, [weatherIntensity]);
 
 
   // Dynamic background based on time of day
@@ -94,6 +115,12 @@ export default function RainyPage() {
     <div className={`min-h-screen w-full relative transition-colors duration-1000 ${getBackground()} overflow-hidden font-sans text-white`}>
       
       <audio ref={audioRef} src={AUDIO_SOURCES[weatherIntensity]} />
+
+      {/* Thunder Overlay */}
+      <div 
+        className={`absolute inset-0 bg-white pointer-events-none z-[5] mix-blend-overlay ${isThundering ? 'thunder-active' : 'opacity-0'}`}
+        aria-hidden="true"
+      />
 
       {/* Rain Layer */}
       <RainEffect intensity={weatherIntensity} />
@@ -137,6 +164,12 @@ export default function RainyPage() {
                         <p className="text-white/50 italic">
                             {weatherIntensity === 'heavy' ? 'Heavy storms outside.' : 'A gentle drizzle.'}
                         </p>
+                         {weatherIntensity === 'heavy' && (
+                             <div className="mt-4 flex items-center justify-center gap-2 text-yellow-200/60 animate-pulse">
+                                 <Zap size={16} />
+                                 <span className="text-xs uppercase tracking-widest">Thunder Active</span>
+                             </div>
+                         )}
                     </div>
                 </div>
              </div>

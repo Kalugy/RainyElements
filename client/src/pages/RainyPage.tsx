@@ -18,6 +18,8 @@ const AUDIO_SOURCES = {
   heavy: 'https://www.orangefreesounds.com/wp-content/uploads/2015/09/Heavy-rain-sound-effect.mp3'
 };
 
+const THUNDER_SOUND = 'https://orangefreesounds.com/wp-content/uploads/2023/01/Thunder-clap-sound-effect-no-rain.mp3';
+
 export default function RainyPage() {
   const [weatherIntensity, setWeatherIntensity] = useState<WeatherType>('medium');
   const [timeOfDay, setTimeOfDay] = useState<TimeOfDay>('night');
@@ -28,6 +30,7 @@ export default function RainyPage() {
   const [isThundering, setIsThundering] = useState(false);
   
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const thunderAudioRef = useRef<HTMLAudioElement | null>(null);
 
   // Handle Audio Playback
   useEffect(() => {
@@ -83,6 +86,14 @@ export default function RainyPage() {
 
     const triggerThunder = () => {
       setIsThundering(true);
+      
+      // Play Thunder Sound
+      if (!isMuted && thunderAudioRef.current) {
+          thunderAudioRef.current.currentTime = 0;
+          thunderAudioRef.current.volume = windowOpen ? 1.0 : 0.5;
+          thunderAudioRef.current.play().catch(e => console.log("Thunder play failed", e));
+      }
+
       setTimeout(() => setIsThundering(false), 1000); // Flash lasts ~1s max in CSS
     };
 
@@ -98,7 +109,7 @@ export default function RainyPage() {
     let timerRef = { current: randomInterval() };
 
     return () => clearTimeout(timerRef.current);
-  }, [weatherIntensity]);
+  }, [weatherIntensity, isMuted, windowOpen]);
 
 
   // Dynamic background based on time of day
@@ -115,6 +126,7 @@ export default function RainyPage() {
     <div className={`min-h-screen w-full relative transition-colors duration-1000 ${getBackground()} overflow-hidden font-sans text-white`}>
       
       <audio ref={audioRef} src={AUDIO_SOURCES[weatherIntensity]} />
+      <audio ref={thunderAudioRef} src={THUNDER_SOUND} />
 
       {/* Thunder Overlay */}
       <div 

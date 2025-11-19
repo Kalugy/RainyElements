@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { RainEffect } from '@/components/RainEffect';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CloudRain, Sun, Moon, Music, Volume2, VolumeX, Wind } from 'lucide-react';
@@ -11,12 +11,74 @@ import { Label } from '@/components/ui/label';
 type WeatherType = 'light' | 'medium' | 'heavy';
 type TimeOfDay = 'day' | 'night' | 'dusk';
 
+// Audio sources
+const AUDIO_SOURCES = {
+  light: 'https://www.orangefreesounds.com/wp-content/uploads/2018/04/Gentle-rain-loop.mp3',
+  medium: 'https://www.orangefreesounds.com/wp-content/uploads/2015/01/Rain-sound-loop.mp3',
+  heavy: 'https://www.orangefreesounds.com/wp-content/uploads/2015/09/Heavy-rain-sound-effect.mp3'
+};
+
 export default function RainyPage() {
   const [weatherIntensity, setWeatherIntensity] = useState<WeatherType>('medium');
   const [timeOfDay, setTimeOfDay] = useState<TimeOfDay>('night');
   const [showControls, setShowControls] = useState(true);
   const [isMuted, setIsMuted] = useState(false);
   const [windowOpen, setWindowOpen] = useState(false);
+  const [volume, setVolume] = useState(0.5);
+  
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  // Handle Audio Playback
+  useEffect(() => {
+    if (!audioRef.current) return;
+
+    const audio = audioRef.current;
+    audio.loop = true;
+    
+    // Update source if it's different
+    // Note: We are checking currentSrc to avoid reloading if it's the same
+    // but src property might be absolute URL, so we just set it if needed.
+    // For simplicity in this prototype, we just set it.
+    const newSrc = AUDIO_SOURCES[weatherIntensity];
+    if (audio.src !== newSrc) {
+       const wasPlaying = !audio.paused;
+       audio.src = newSrc;
+       audio.volume = volume; // Reset volume just in case
+       if (wasPlaying && !isMuted) {
+         audio.play().catch(e => console.log("Audio play failed:", e));
+       }
+    }
+  }, [weatherIntensity]);
+
+  // Handle Mute/Play/Volume
+  useEffect(() => {
+    if (!audioRef.current) return;
+    const audio = audioRef.current;
+
+    if (isMuted) {
+      audio.pause();
+    } else {
+      // Only try to play if we have a source and user likely interacted
+      audio.volume = volume;
+      const playPromise = audio.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(error => {
+          // Auto-play was prevented
+          console.log("Playback prevented. User interaction needed.");
+        });
+      }
+    }
+  }, [isMuted, volume]);
+
+  // Adjust volume based on window open state
+  useEffect(() => {
+      if(windowOpen) {
+          setVolume(0.8);
+      } else {
+          setVolume(0.3); // Muffled sound when window is closed
+      }
+  }, [windowOpen]);
+
 
   // Dynamic background based on time of day
   const getBackground = () => {
@@ -31,6 +93,8 @@ export default function RainyPage() {
   return (
     <div className={`min-h-screen w-full relative transition-colors duration-1000 ${getBackground()} overflow-hidden font-sans text-white`}>
       
+      <audio ref={audioRef} src={AUDIO_SOURCES[weatherIntensity]} />
+
       {/* Rain Layer */}
       <RainEffect intensity={weatherIntensity} />
 
@@ -117,7 +181,10 @@ export default function RainyPage() {
                             <Button 
                                 variant={weatherIntensity === 'light' ? "secondary" : "ghost"} 
                                 size="sm" 
-                                onClick={() => setWeatherIntensity('light')}
+                                onClick={() => {
+                                    setWeatherIntensity('light');
+                                    setIsMuted(false);
+                                }}
                                 className="flex-1 text-xs"
                             >
                                 Light
@@ -125,7 +192,10 @@ export default function RainyPage() {
                             <Button 
                                 variant={weatherIntensity === 'medium' ? "secondary" : "ghost"} 
                                 size="sm" 
-                                onClick={() => setWeatherIntensity('medium')}
+                                onClick={() => {
+                                    setWeatherIntensity('medium');
+                                    setIsMuted(false);
+                                }}
                                 className="flex-1 text-xs"
                             >
                                 Medium
@@ -133,7 +203,10 @@ export default function RainyPage() {
                             <Button 
                                 variant={weatherIntensity === 'heavy' ? "secondary" : "ghost"} 
                                 size="sm" 
-                                onClick={() => setWeatherIntensity('heavy')}
+                                onClick={() => {
+                                    setWeatherIntensity('heavy');
+                                    setIsMuted(false);
+                                }}
                                 className="flex-1 text-xs"
                             >
                                 Storm

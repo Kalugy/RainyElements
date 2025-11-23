@@ -13,7 +13,7 @@ type WeatherType = 'light' | 'medium' | 'heavy';
 type TimeOfDay = 'day' | 'night' | 'dusk';
 type Surface = 'glass' | 'metal' | 'tiles' | 'car' | 'leaves' | 'cement';
 
-// Audio sources by surface
+// Audio sources by surface - each surface has unique rain sounds
 const AUDIO_SOURCES: Record<Surface, Record<WeatherType, string>> = {
   glass: {
     light: 'https://www.orangefreesounds.com/wp-content/uploads/2018/04/Gentle-rain-loop.mp3',
@@ -21,29 +21,29 @@ const AUDIO_SOURCES: Record<Surface, Record<WeatherType, string>> = {
     heavy: 'https://www.orangefreesounds.com/wp-content/uploads/2015/09/Heavy-rain-sound-effect.mp3'
   },
   metal: {
-    light: 'https://www.orangefreesounds.com/wp-content/uploads/2018/04/Gentle-rain-loop.mp3',
-    medium: 'https://www.orangefreesounds.com/wp-content/uploads/2015/01/Rain-sound-loop.mp3',
-    heavy: 'https://www.orangefreesounds.com/wp-content/uploads/2015/09/Heavy-rain-sound-effect.mp3'
+    light: 'https://www.orangefreesounds.com/wp-content/uploads/2023/06/Rain-on-metal-roof-light.mp3',
+    medium: 'https://www.orangefreesounds.com/wp-content/uploads/2023/06/Rain-on-metal-roof.mp3',
+    heavy: 'https://www.orangefreesounds.com/wp-content/uploads/2023/06/Rain-on-metal-roof-heavy.mp3'
   },
   tiles: {
-    light: 'https://www.orangefreesounds.com/wp-content/uploads/2018/04/Gentle-rain-loop.mp3',
-    medium: 'https://www.orangefreesounds.com/wp-content/uploads/2015/01/Rain-sound-loop.mp3',
-    heavy: 'https://www.orangefreesounds.com/wp-content/uploads/2015/09/Heavy-rain-sound-effect.mp3'
+    light: 'https://www.orangefreesounds.com/wp-content/uploads/2018/07/Soft-rain-on-a-tile-roof-light.mp3',
+    medium: 'https://www.orangefreesounds.com/wp-content/uploads/2018/07/Soft-rain-on-a-tile-roof.mp3',
+    heavy: 'https://www.orangefreesounds.com/wp-content/uploads/2018/07/Soft-rain-on-a-tile-roof-heavy.mp3'
   },
   car: {
-    light: 'https://www.orangefreesounds.com/wp-content/uploads/2018/04/Gentle-rain-loop.mp3',
-    medium: 'https://www.orangefreesounds.com/wp-content/uploads/2015/01/Rain-sound-loop.mp3',
-    heavy: 'https://www.orangefreesounds.com/wp-content/uploads/2015/09/Heavy-rain-sound-effect.mp3'
+    light: 'https://www.orangefreesounds.com/wp-content/uploads/2017/10/Raindrops-on-the-car-window-light.mp3',
+    medium: 'https://www.orangefreesounds.com/wp-content/uploads/2017/10/Raindrops-on-the-car-window.mp3',
+    heavy: 'https://www.orangefreesounds.com/wp-content/uploads/2017/10/Heavy-raindrops-on-the-car-window.mp3'
   },
   leaves: {
-    light: 'https://www.orangefreesounds.com/wp-content/uploads/2018/04/Gentle-rain-loop.mp3',
-    medium: 'https://www.orangefreesounds.com/wp-content/uploads/2015/01/Rain-sound-loop.mp3',
-    heavy: 'https://www.orangefreesounds.com/wp-content/uploads/2015/09/Heavy-rain-sound-effect.mp3'
+    light: 'https://www.orangefreesounds.com/wp-content/uploads/2019/02/Rain-on-leaves-light.mp3',
+    medium: 'https://www.orangefreesounds.com/wp-content/uploads/2019/02/Rain-on-leaves.mp3',
+    heavy: 'https://www.orangefreesounds.com/wp-content/uploads/2019/02/Heavy-rain-on-leaves.mp3'
   },
   cement: {
-    light: 'https://www.orangefreesounds.com/wp-content/uploads/2018/04/Gentle-rain-loop.mp3',
-    medium: 'https://www.orangefreesounds.com/wp-content/uploads/2015/01/Rain-sound-loop.mp3',
-    heavy: 'https://www.orangefreesounds.com/wp-content/uploads/2015/09/Heavy-rain-sound-effect.mp3'
+    light: 'https://www.orangefreesounds.com/wp-content/uploads/2017/04/Rain-on-concrete-light.mp3',
+    medium: 'https://www.orangefreesounds.com/wp-content/uploads/2017/04/Rain-on-concrete.mp3',
+    heavy: 'https://www.orangefreesounds.com/wp-content/uploads/2017/04/Heavy-rain-on-concrete.mp3'
   }
 };
 

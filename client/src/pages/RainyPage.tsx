@@ -7,15 +7,44 @@ import { Slider } from '@/components/ui/slider';
 import { Switch } from '@/components/ui/switch';
 import { Card } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 type WeatherType = 'light' | 'medium' | 'heavy';
 type TimeOfDay = 'day' | 'night' | 'dusk';
+type Surface = 'glass' | 'metal' | 'tiles' | 'car' | 'leaves' | 'cement';
 
-// Audio sources
-const AUDIO_SOURCES = {
-  light: 'https://www.orangefreesounds.com/wp-content/uploads/2018/04/Gentle-rain-loop.mp3',
-  medium: 'https://www.orangefreesounds.com/wp-content/uploads/2015/01/Rain-sound-loop.mp3',
-  heavy: 'https://www.orangefreesounds.com/wp-content/uploads/2015/09/Heavy-rain-sound-effect.mp3'
+// Audio sources by surface
+const AUDIO_SOURCES: Record<Surface, Record<WeatherType, string>> = {
+  glass: {
+    light: 'https://www.orangefreesounds.com/wp-content/uploads/2018/04/Gentle-rain-loop.mp3',
+    medium: 'https://www.orangefreesounds.com/wp-content/uploads/2015/01/Rain-sound-loop.mp3',
+    heavy: 'https://www.orangefreesounds.com/wp-content/uploads/2015/09/Heavy-rain-sound-effect.mp3'
+  },
+  metal: {
+    light: 'https://www.orangefreesounds.com/wp-content/uploads/2018/04/Gentle-rain-loop.mp3',
+    medium: 'https://www.orangefreesounds.com/wp-content/uploads/2015/01/Rain-sound-loop.mp3',
+    heavy: 'https://www.orangefreesounds.com/wp-content/uploads/2015/09/Heavy-rain-sound-effect.mp3'
+  },
+  tiles: {
+    light: 'https://www.orangefreesounds.com/wp-content/uploads/2018/04/Gentle-rain-loop.mp3',
+    medium: 'https://www.orangefreesounds.com/wp-content/uploads/2015/01/Rain-sound-loop.mp3',
+    heavy: 'https://www.orangefreesounds.com/wp-content/uploads/2015/09/Heavy-rain-sound-effect.mp3'
+  },
+  car: {
+    light: 'https://www.orangefreesounds.com/wp-content/uploads/2018/04/Gentle-rain-loop.mp3',
+    medium: 'https://www.orangefreesounds.com/wp-content/uploads/2015/01/Rain-sound-loop.mp3',
+    heavy: 'https://www.orangefreesounds.com/wp-content/uploads/2015/09/Heavy-rain-sound-effect.mp3'
+  },
+  leaves: {
+    light: 'https://www.orangefreesounds.com/wp-content/uploads/2018/04/Gentle-rain-loop.mp3',
+    medium: 'https://www.orangefreesounds.com/wp-content/uploads/2015/01/Rain-sound-loop.mp3',
+    heavy: 'https://www.orangefreesounds.com/wp-content/uploads/2015/09/Heavy-rain-sound-effect.mp3'
+  },
+  cement: {
+    light: 'https://www.orangefreesounds.com/wp-content/uploads/2018/04/Gentle-rain-loop.mp3',
+    medium: 'https://www.orangefreesounds.com/wp-content/uploads/2015/01/Rain-sound-loop.mp3',
+    heavy: 'https://www.orangefreesounds.com/wp-content/uploads/2015/09/Heavy-rain-sound-effect.mp3'
+  }
 };
 
 const THUNDER_SOUND = 'https://orangefreesounds.com/wp-content/uploads/2023/01/Thunder-clap-sound-effect-no-rain.mp3';
@@ -29,6 +58,7 @@ export default function RainyPage() {
   const [volume, setVolume] = useState(0.5);
   const [isThundering, setIsThundering] = useState(false);
   const [enableManualThunder, setEnableManualThunder] = useState(false);
+  const [surface, setSurface] = useState<Surface>('glass');
   
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const thunderAudioRef = useRef<HTMLAudioElement | null>(null);
@@ -40,7 +70,7 @@ export default function RainyPage() {
     const audio = audioRef.current;
     audio.loop = true;
     
-    const targetSrc = AUDIO_SOURCES[weatherIntensity];
+    const targetSrc = AUDIO_SOURCES[surface][weatherIntensity];
     
     // Check if source changed or if we need to start playing
     const needsSrcChange = audio.src !== targetSrc;
@@ -66,7 +96,7 @@ export default function RainyPage() {
         }
       }
     }
-  }, [weatherIntensity, isMuted, volume]);
+  }, [weatherIntensity, isMuted, volume, surface]);
 
   // Adjust volume based on window open state
   useEffect(() => {
@@ -128,7 +158,7 @@ export default function RainyPage() {
       
       // Force reload/play immediately for better responsiveness
       if (audioRef.current) {
-          const newSrc = AUDIO_SOURCES[intensity];
+          const newSrc = AUDIO_SOURCES[surface][intensity];
           if (audioRef.current.src !== newSrc) {
               audioRef.current.src = newSrc;
               audioRef.current.play().catch(e => console.log("Force play failed", e));
@@ -308,6 +338,26 @@ export default function RainyPage() {
                                 <Moon className="h-4 w-4" />
                             </Button>
                         </div>
+                    </div>
+
+                    <div className="h-px bg-white/10" />
+
+                    {/* Surface Selection */}
+                    <div className="space-y-3">
+                        <Label className="text-white/70">Rain Surface</Label>
+                        <Select value={surface} onValueChange={(value) => setSurface(value as Surface)}>
+                            <SelectTrigger className="bg-white/10 border-white/20 text-white">
+                                <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="glass">Glass Window</SelectItem>
+                                <SelectItem value="metal">Metal Roof</SelectItem>
+                                <SelectItem value="tiles">Tile Roof</SelectItem>
+                                <SelectItem value="car">Car Roof</SelectItem>
+                                <SelectItem value="leaves">Tree Leaves</SelectItem>
+                                <SelectItem value="cement">Cement Floor</SelectItem>
+                            </SelectContent>
+                        </Select>
                     </div>
 
                      <div className="h-px bg-white/10" />

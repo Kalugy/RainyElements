@@ -217,7 +217,7 @@ export default function RainyPage() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 z-30 flex flex-col items-center justify-center gap-6 bg-black/40 backdrop-blur-sm"
+              className="fixed inset-0 z-[9999] flex flex-col items-center justify-center gap-6 bg-black/40 backdrop-blur-sm"
             >
               <motion.div 
                 className="text-center mb-8"

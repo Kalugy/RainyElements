@@ -28,6 +28,7 @@ export default function RainyPage() {
   const [windowOpen, setWindowOpen] = useState(false);
   const [volume, setVolume] = useState(0.5);
   const [isThundering, setIsThundering] = useState(false);
+  const [enableManualThunder, setEnableManualThunder] = useState(false);
   
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const thunderAudioRef = useRef<HTMLAudioElement | null>(null);
@@ -133,6 +134,19 @@ export default function RainyPage() {
               audioRef.current.play().catch(e => console.log("Force play failed", e));
           }
       }
+  };
+
+  const triggerManualThunder = () => {
+      setIsThundering(true);
+      
+      // Play Thunder Sound
+      if (!isMuted && thunderAudioRef.current) {
+          thunderAudioRef.current.currentTime = 0;
+          thunderAudioRef.current.volume = windowOpen ? 1.0 : 0.5;
+          thunderAudioRef.current.play().catch(e => console.log("Thunder play failed", e));
+      }
+
+      setTimeout(() => setIsThundering(false), 1000);
   };
 
   return (
@@ -319,6 +333,34 @@ export default function RainyPage() {
                             onCheckedChange={setWindowOpen} 
                             className="data-[state=checked]:bg-white/20"
                         />
+                    </div>
+
+                    <div className="h-px bg-white/10" />
+
+                    {/* Manual Thunder Control */}
+                    <div className="space-y-3">
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2 text-white/70">
+                                <Zap className="h-4 w-4" />
+                                <span className="text-sm">Enable Thunder</span>
+                            </div>
+                            <Switch 
+                                checked={enableManualThunder} 
+                                onCheckedChange={setEnableManualThunder} 
+                                className="data-[state=checked]:bg-yellow-400/30"
+                            />
+                        </div>
+                        {enableManualThunder && (
+                            <Button 
+                                onClick={triggerManualThunder}
+                                variant="outline" 
+                                className="w-full border-yellow-400/30 text-yellow-200 hover:bg-yellow-400/10"
+                                data-testid="button-trigger-thunder"
+                            >
+                                <Zap className="h-4 w-4 mr-2" />
+                                Trigger Thunder
+                            </Button>
+                        )}
                     </div>
 
                 </div>

@@ -59,6 +59,7 @@ export default function RainyPage() {
   const [isThundering, setIsThundering] = useState(false);
   const [enableManualThunder, setEnableManualThunder] = useState(false);
   const [surface, setSurface] = useState<Surface>('glass');
+  const [hasStarted, setHasStarted] = useState(false);
   
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const thunderAudioRef = useRef<HTMLAudioElement | null>(null);
@@ -179,6 +180,18 @@ export default function RainyPage() {
       setTimeout(() => setIsThundering(false), 1000);
   };
 
+  const handlePlayClick = () => {
+      setHasStarted(true);
+      setIsMuted(false);
+      
+      // Start audio immediately
+      if (audioRef.current) {
+          const targetSrc = AUDIO_SOURCES[surface][weatherIntensity];
+          audioRef.current.src = targetSrc;
+          audioRef.current.play().catch(e => console.log("Play failed", e));
+      }
+  };
+
   return (
     <div className={`min-h-screen w-full relative transition-colors duration-1000 ${getBackground()} overflow-hidden font-sans text-white`}>
       
@@ -197,6 +210,43 @@ export default function RainyPage() {
       {/* Content Container */}
       <div className="relative z-10 min-h-screen flex flex-col items-center justify-center p-6">
         
+        {/* Play Button Overlay - Shows on first load */}
+        <AnimatePresence>
+          {!hasStarted && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-30 flex flex-col items-center justify-center gap-6 bg-black/40 backdrop-blur-sm"
+            >
+              <motion.div 
+                className="text-center mb-8"
+                initial={{ scale: 0.95, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ delay: 0.3 }}
+              >
+                <h2 className="font-serif text-4xl md:text-5xl mb-2 text-white drop-shadow-lg">
+                  Ready to Relax?
+                </h2>
+                <p className="text-white/70 text-lg">
+                  Click to start the rain
+                </p>
+              </motion.div>
+              
+              <motion.button
+                onClick={handlePlayClick}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+                className="flex items-center justify-center gap-3 px-8 py-4 bg-white/20 hover:bg-white/30 text-white rounded-full backdrop-blur-md border border-white/20 transition-colors text-lg font-medium"
+                data-testid="button-play-audio"
+              >
+                <Music className="h-6 w-6" />
+                Start Listening
+              </motion.button>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         {/* Hero Text */}
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
